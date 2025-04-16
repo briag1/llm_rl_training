@@ -53,7 +53,7 @@ class Trainer:
             optimizer.zero_grad()
             loss = loss.detach()
             training_info.losses.append(loss)
-        return loss
+        return training_info
         
     
     
