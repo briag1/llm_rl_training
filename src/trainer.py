@@ -33,7 +33,8 @@ class Trainer:
         training_config : Optional[TrainingConfig] = None
         ):
         self.training_config = training_config if  training_config is not None else TrainingConfig()
-        self.generator = generator.to(self.training_config.device)
+        self.generator = generator
+        self.generator.to(self.training_config.device)
         self.env = env
         self.prompt_template = prompt_template
         
