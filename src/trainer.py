@@ -1,11 +1,11 @@
 import torch
 from torch.optim import AdamW
 from src.generation.generator import Generator
-from src.env.math_expression_generator import MathExpressionGenerator
+from src.environements.math_expression_generator import MathExpressionGenerator
 from pydantic.dataclasses import dataclass
 from pydantic import Field
 from typing import Optional
-from src.env.env import MathEnv
+from src.environements.env import MathEnv
 from enum import StrEnum
 from src.prompts import prompt_template
 from tqdm import tqdm 

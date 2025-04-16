@@ -1,4 +1,4 @@
-from src.env.parser import Parser
+from src.environements.parser import Parser
 from src.generation.generator import GeneratorOutput
 
 class Rewarder:

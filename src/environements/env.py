@@ -2,9 +2,9 @@ import gymnasium as gym
 
 from typing import Optional
 
-from src.env.rewarder import Rewarder
-from src.env.parser import Parser
-from src.env.math_expression_generator import MathExpressionGenerator
+from src.environements.rewarder import Rewarder
+from src.environements.parser import Parser
+from src.environements.math_expression_generator import MathExpressionGenerator
 
 
 class MathEnv(gym.Env):
