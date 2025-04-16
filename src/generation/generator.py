@@ -23,7 +23,7 @@ class Generator(ABC):
         self.max_new_token  = self.generator_config.max_new_token
     
     def to(self, device: str)->None:
-        self.model.to(device)
+        self.model = self.model.to(device)
         self.device = device
         
     @abstractmethod

@@ -12,7 +12,7 @@ class GreedyGenerator(Generator):
         len_initial_inputs_ids = inputs_ids.shape[1]
         
         while True:
-            inputs_ids.to(self.device)
+            inputs_ids = inputs_ids.to(self.device)
             model_out = self.model.forward(inputs_ids)
             probs = torch.nn.functional.softmax(model_out.logits, dim=-1)
             next_token_id = torch.multinomial(probs[:, -1, :], num_samples=1)  # Sampling top token
