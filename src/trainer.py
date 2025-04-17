@@ -48,7 +48,7 @@ class Trainer:
             out = self.generator.generate(prompt)
             log_probs = torch.log(out.probabilites[torch.arange(len(out.generated_token_id)),out.generated_token_id]).sum()
             _, reward, _, _, _ = self.env.step(out.sequence)
-            loss= reward*log_probs
+            loss= - reward*log_probs
             loss.backward()
             optimizer.step()
             optimizer.zero_grad()
