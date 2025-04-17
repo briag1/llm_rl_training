@@ -10,10 +10,10 @@ class Rewarder:
         try:
             parsed_output = self.parser.parse(generator_out)
             reward += 1
-            result= float(parsed_output.result)
-            reward -= abs(result-generator_out)/abs(result+generator_out)
+            result = float(parsed_output.result)
+            reward += 1/abs(result-generator_out) #/abs(result+generator_out)
         except:
-            return reward - 1
+            return reward - 0.01
 
             
             

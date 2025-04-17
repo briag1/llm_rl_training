@@ -22,6 +22,7 @@ class TrainingConfig:
 @dataclass
 class TrainingInfo:
     losses: list[float] = Field(default = [])
+    rewards: list[float] = Field(default = [])
     
     
 class Trainer:
@@ -54,6 +55,7 @@ class Trainer:
             optimizer.zero_grad()
             loss = loss.detach()
             training_info.losses.append(loss)
+            training_info.rewards.append(reward)
         return training_info
         
     
