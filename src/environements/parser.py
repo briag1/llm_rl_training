@@ -20,11 +20,11 @@ class Parser:
     def parse(self, input_str: str):
         input_str = input_str.strip()
         if input_str.startswith(self.parsing_config.assistant_start):
-            input_str.replace(self.parsing_config.assistant_start, "")
+            input_str= input_str.replace(self.parsing_config.assistant_start, "")
         else:
             raise ParsingError
         if input_str.endswith(self.parsing_config.assistant_end):
-            input_str.replace(self.parsing_config.assistant_end, "")
+            input_str = input_str.replace(self.parsing_config.assistant_end, "")
         else:
             raise ParsingError
         splitted_output = input_str.split(self.parsing_config.result_heading)
