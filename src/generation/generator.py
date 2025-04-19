@@ -17,7 +17,7 @@ class GeneratorConfig:
 class Generator(ABC):
     def __init__(self, generator_config : Optional[GeneratorConfig] = None):
         super().__init__()
-        self.generator_config = GeneratorConfig() if generator_config is None else GeneratorConfig()
+        self.generator_config = GeneratorConfig() if generator_config is None else generator_config
         self.model = LlamaForCausalLM.from_pretrained(self.generator_config.model_name)
         self.tokenizer = AutoTokenizer.from_pretrained(self.generator_config.model_name)
         self.max_new_token  = self.generator_config.max_new_token

@@ -5,7 +5,8 @@ from src.generation.generator import Generator
 class GreedyGenerator(Generator):
     
     def generate(self, query: str) -> GeneratorOutput:
-        messages = [{"role": "user", "content": query}]
+        
+        messages = [{"role": "user", "content": inputs_ids}]
         input_text=self.tokenizer.apply_chat_template(messages, tokenize=False)
         inputs_ids = self.tokenizer(input_text, return_tensors = "pt")["input_ids"]
         len_initial_inputs_ids = inputs_ids.shape[1]
