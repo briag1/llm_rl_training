@@ -9,21 +9,32 @@ from src.environements.env import MathEnv
 from enum import StrEnum
 from src.prompts import prompt_template
 from tqdm import tqdm 
+
 class Device(StrEnum):
     CUDA= "cuda"
     CPU ="cpu"
     
 @dataclass
 class TrainingConfig:
-    num_samples: int = Field(default = 100)
-    device: Device = Field(default= "cpu")
-    lr: float = Field(default = 1e-4)
+    num_samples: int = Field(default = 200)
+    eval_freq : int = Field(default= 50)
+    eval_size : int = Field(default = 30)
+    test_size : int = Field(default = 50)
+    device: Device = Field(default= "cuda")
+    lr: float = Field(default = 5e-5)
 
+@dataclass 
+class EvaluateInfo:
+    losses: list[float] = Field(default = [])
+    rewards: list[float] = Field(default = [])
+    
 @dataclass
 class TrainingInfo:
     losses: list[float] = Field(default = [])
     rewards: list[float] = Field(default = [])
-    
+    eval_infos : list[EvaluateInfo] = Field(default = [])
+    test_infos : Optional[EvaluateInfo] = None
+
     
 class Trainer:
     def __init__(
@@ -39,11 +50,32 @@ class Trainer:
         self.env = env
         self.prompt_template = prompt_template
         
+    def evaluate(self, num_sample: int, index: int) -> EvaluateInfo:
+        self.generator.eval()
+        self.env.math_generator.set_split(index)
+        eval_info = EvaluateInfo()
+        for _ in tqdm(range(num_sample)):
+            expression = self.env.reset()
+            prompt = self.prompt_template.format(expression = expression)
+            with torch.no_grad():
+                out = self.generator.generate(prompt)
+            log_probs = torch.log(out.probabilites[torch.arange(len(out.generated_token_id)),out.generated_token_id]).sum()
+            _, reward, _, _, _ = self.env.step(out.sequence)
+            loss= - reward*log_probs
+            eval_info.losses.append(loss)
+            eval_info.rewards.append(reward)
+        return eval_info
+              
         
     def train(self,) -> TrainingInfo:
+        
         training_info = TrainingInfo()
         optimizer = AdamW(self.generator.model.parameters(), lr=self.training_config.lr)
-        for _ in tqdm(range(self.training_config.num_samples)):
+        
+        for id_sample in tqdm(range(self.training_config.num_samples)):
+            self.generator.train()
+            if id_sample%self.training_config.eval_freq == 0:
+                training_info.eval_infos.append(self.evaluate(self.training_config.eval_size, 1))
             expression = self.env.reset()
             prompt = self.prompt_template.format(expression = expression)
             out = self.generator.generate(prompt)
@@ -56,6 +88,7 @@ class Trainer:
             loss = loss.detach()
             training_info.losses.append(loss)
             training_info.rewards.append(reward)
+        training_info.test_infos = self.evaluate(self.training_config.eval_size, )
         return training_info
         
     

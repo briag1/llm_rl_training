@@ -2,8 +2,29 @@
 import random
 import numpy as np
 from abc import ABC, abstractmethod
+from pydantic import Field
+from typing import Optional
+from pydantic.dataclasses import dataclass
+
+@dataclass
+class MathExpressionGeneratorConfig:
+     low: int = Field(default = -100)
+     high: int = Field( default = 100)
+     splits: list[float] = Field(default=[0.8, 0.1, 0.1])
+     seed: int = Field(default = 0)
+    
 
 class MathExpressionGenerator(ABC):
+    def __init__(self, config: Optional[MathExpressionGeneratorConfig] = None):
+        self.config = config if config is not None else MathExpressionGeneratorConfig()
+        np.random.seed(self.config.seed)
+        
+    @abstractmethod
+    def get_split_index(self, ) -> int:
+        ...
+    @abstractmethod    
+    def set_split(self, index: int)-> None:
+        ...
     
     def generate(self, num_expressions: int) -> list[str]:
         return [self.generate_expression() for _  in range(num_expressions)]
@@ -15,12 +36,40 @@ class MathExpressionGenerator(ABC):
     
 class SimpleMathExpressionGenerator(MathExpressionGenerator):
     
+    def __init__(self, config: Optional[MathExpressionGeneratorConfig] = None):
+        super().__init__(config)
+        self.config.splits
+        normalized_split = np.array(self.config.splits)/np.sum(self.config.splits)
+        digits = np.arange(start=self.config.low, stop = self.config.high)
+        permutated_digits = np.random.permutation(digits)
+        self.digits_splits = []
+        current_index= 0
+        for id_split, split in enumerate(normalized_split):
+            if id_split != len(normalized_split) -1: 
+                size = int(len(permutated_digits)*split)
+                new_current_index = current_index+size
+                self.digits_splits.append(permutated_digits[current_index: new_current_index])
+                current_index = new_current_index
+            else:
+                self.digits_splits.append(permutated_digits[current_index: ])
+        self.current_index = 0
+        self.current_digits_split =  self.digits_splits[self.current_index]
+
+    def get_split_index(self, ) -> int:
+        return self.current_index
+          
+    def set_split(self, index: int)-> None:
+        self.current_index = index
+        self.current_digits_split = self.digits_splits[self.current_index]
+    
     def generate_expression(self,) -> str:
-        element = np.random.randint(low = -1000, high = 1000, size = 2).astype(str).tolist()
+        
+        element = np.random.choice(self.current_digits_split, size = 2, replace = True).astype(str).tolist()
         symbols = ["+", "-", "/", "*"]
         id_symbol = np.random.choice(len(symbols))
         chosen_symbol = symbols[id_symbol]
         return chosen_symbol.join(element)
+    
     
 class ComplexMathExpressionGenerator(MathExpressionGenerator):
     def __init__(self, gamma : float = 0.1, clip_poisson: int = 5, max_depth: int = 30, start_symbol = "Expr"):

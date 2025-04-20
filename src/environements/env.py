@@ -1,5 +1,5 @@
 import gymnasium as gym 
-
+import numpy as np 
 from typing import Optional
 
 from src.environements.rewarder import Rewarder
@@ -10,6 +10,7 @@ from src.environements.math_expression_generator import MathExpressionGenerator
 class MathEnv(gym.Env):
     def __init__(self, rewarder: Rewarder, math_generator: MathExpressionGenerator) -> None:
         super().__init__()
+        
         self.rewarder = rewarder 
         self.math_generator = math_generator
         

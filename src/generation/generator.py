@@ -21,7 +21,13 @@ class Generator(ABC):
         self.model = LlamaForCausalLM.from_pretrained(self.generator_config.model_name)
         self.tokenizer = AutoTokenizer.from_pretrained(self.generator_config.model_name)
         self.max_new_token  = self.generator_config.max_new_token
+        
+    def eval(self, ) -> None:
+        self.model.eval()
     
+    def train(self, ) -> None:
+        self.model.train()
+        
     def to(self, device: str)->None:
         self.model = self.model.to(device)
         self.device = device
