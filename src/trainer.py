@@ -62,7 +62,11 @@ class Trainer:
             log_probs = torch.log(out.probabilites[torch.arange(len(out.generated_token_id)),out.generated_token_id]).sum()
             _, reward, _, _, _ = self.env.step(out.sequence)
             loss= - reward*log_probs
-            eval_info.losses.append(loss)
+            log_probs.detach()
+            out.generated_token_id.detach()
+            out.probabilites.detach()
+
+            eval_info.losses.append(loss.detach())
             eval_info.rewards.append(reward)
         return eval_info
               
@@ -85,7 +89,10 @@ class Trainer:
             loss.backward()
             optimizer.step()
             optimizer.zero_grad()
+            log_probs.detach()
             loss = loss.detach()
+            out.generated_token_id.detach()
+            out.probabilites.detach()
             training_info.losses.append(loss)
             training_info.rewards.append(reward)
         training_info.test_infos = self.evaluate(self.training_config.eval_size, )
