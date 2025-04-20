@@ -16,10 +16,10 @@ class Device(StrEnum):
     
 @dataclass
 class TrainingConfig:
-    num_samples: int = Field(default = 200)
-    eval_freq : int = Field(default= 50)
-    eval_size : int = Field(default = 30)
-    test_size : int = Field(default = 50)
+    num_samples: int = Field(default = 100)
+    eval_freq : int = Field(default= 25)
+    eval_size : int = Field(default = 10)
+    test_size : int = Field(default = 20)
     device: Device = Field(default= "cuda")
     lr: float = Field(default = 5e-5)
 
@@ -95,7 +95,7 @@ class Trainer:
             out.probabilites.detach()
             training_info.losses.append(loss)
             training_info.rewards.append(reward)
-        training_info.test_infos = self.evaluate(self.training_config.eval_size, )
+        training_info.test_infos = self.evaluate(self.training_config.eval_size, 2)
         return training_info
         
     

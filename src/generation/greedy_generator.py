@@ -1,10 +1,12 @@
 import torch
 from src.generation.generator_output import GeneratorOutput
 from src.generation.generator import Generator
+from contextlib import nullcontext
 
 class GreedyGenerator(Generator):
     
     def generate(self, query: str) -> GeneratorOutput:
+            
         messages = [{"role": "user", "content": query}]
         input_text=self.tokenizer.apply_chat_template(messages, tokenize=False)
         inputs_ids = self.tokenizer(input_text, return_tensors = "pt")["input_ids"]
